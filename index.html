@@ -27,12 +27,10 @@
 
 			// Call only once
 			function init() {
-				if(COUNT < 2) {
-					var g = document.querySelector('g');
-					g.addEventListener('mousedown', start);
-					g.addEventListener("mousemove",  move);
-					g.addEventListener('mouseup', finish);
-				}
+				var g = document.querySelector('g');
+				g.addEventListener('mousedown', start);
+				g.addEventListener("mousemove",  move);
+				g.addEventListener('mouseup', finish);
 			}
 
 			function creatNewNode() {
