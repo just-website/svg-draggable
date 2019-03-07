@@ -45,13 +45,13 @@
 				rect.setAttribute('rx', '5');
 
 				let text = document.createElementNS(SVGURL, 'text');
+				let textNode = document.createTextNode('Some Node');
 				text.setAttribute('x', '35');
 				text.setAttribute('y', '50');
 				text.setAttribute('font-family', 'Verdana');
 				text.setAttribute('font-size', '15');
 				text.setAttribute('fill', 'blue');
 				text.setAttribute('text', 'Some Node');
-				let textNode = document.createTextNode('Some Node');
 				text.appendChild(textNode);
 
 				g.appendChild(rect);
