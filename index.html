@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	</head>
+
+	<style>
+		rect {
+			fill: white; stroke: red; stroke-width: 2;
+		}
+		
+	</style>
+
+	<body>
+
+		<svg height="600" width="1500" onload="init()">
+			<g>
+				<rect x="30" y="20" width="100" height="100" rx="5"></rect>
+				<text x="35" y="50" font-family="Verdana" font-size="15" fill="blue">Some Node</text>
+			</g>
+			<path d="M200 0 V 600" fill="transparent" stroke="black"/>
+		</svg>
+
+		<script>
+
+			var COUNT = 1;
+			const SVGURL = 'http://www.w3.org/2000/svg';
+
+			// Call only once
+			function init() {
+				if(COUNT < 2) {
+					var g = document.querySelector('g');
+					g.addEventListener('mousedown', start);
+					g.addEventListener("mousemove",  move);
+					g.addEventListener('mouseup', finish);
+				}
+			}
+
+			function creatNewNode() {
+				let svg = document.getElementsByTagName('svg')[0];
+				let g = document.createElementNS(SVGURL, 'g');
+
+				let rect = document.createElementNS(SVGURL, 'rect');
+				rect.setAttribute('x', '30');
+				rect.setAttribute('y', '20');
+				rect.setAttribute('width', '100');
+				rect.setAttribute('height', '100');
+				rect.setAttribute('rx', '5');
+
+				let text = document.createElementNS(SVGURL, 'text');
+				text.setAttribute('x', '35');
+				text.setAttribute('y', '50');
+				text.setAttribute('font-family', 'Verdana');
+				text.setAttribute('font-size', '15');
+				text.setAttribute('fill', 'blue');
+				text.setAttribute('text', 'Some Node');
+				let textNode = document.createTextNode('Some Node');
+				text.appendChild(textNode);
+
+				g.appendChild(rect);
+				g.appendChild(text);
+				svg.appendChild(g);
+
+				g.addEventListener('mousedown', start);
+				g.addEventListener("mousemove",  move);
+				g.addEventListener('mouseup', finish);
+			}
+
+			// Event listener functions
+
+			function start(e) {
+				this.classList.add("active");
+				console.log(this.getAttribute('x'))
+				this.setAttribute('diifX', e.pageX - this.getAttribute('x'));
+				this.setAttribute('diifY', e.pageY - this.getAttribute('y'));
+			}
+
+			function move(e) {
+				if(this.classList.contains("active")) {
+					let x = e.pageX - this.getAttribute('diifX');
+					let y = e.pageY - this.getAttribute('diifY')
+					let translate = 'translate(' + x + ',' + y + ')';
+					this.setAttribute('transform', translate)
+					this.setAttribute('x', x);
+					this.setAttribute('y', y);
+				}
+			}
+
+			function finish(e) {
+				this.classList.remove("active");
+				creatNewNode();
+				COUNT++;
+			}
+
+		</script>
+	</body>
+</html>
