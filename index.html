@@ -8,31 +8,26 @@
 		rect {
 			fill: white; stroke: red; stroke-width: 2;
 		}
+		
 	</style>
 
 	<body>
 
-		<svg height="600" width="1500" onload="init()">
-			<g>
-				<rect x="30" y="20" width="100" height="100" rx="5"></rect>
-				<text x="35" y="50" font-family="Verdana" font-size="15" fill="blue">Some Node</text>
-			</g>
-			<path d="M200 0 V 600" fill="transparent" stroke="black"/>
-		</svg>
-
+		<svg style="background: rgb(240,240,240)" height="600" width="1500"></svg>
+		
+		<button class="create-new-element" style="display: block;">Create new element</button>
+		
 		<script>
-
+			
+			document.querySelector('button.create-new-element').addEventListener('click', creatNewNode);
+			
 			const SVGURL = 'http://www.w3.org/2000/svg';
 
-			// Call only once
-			function init() {
-				var g = document.querySelector('g');
-				g.addEventListener('mousedown', start);
-				g.addEventListener("mousemove",  move);
-				g.addEventListener('mouseup', finish);
-			}
+			document.body.addEventListener('mousedown', start);
 
-			function creatNewNode() {
+			function creatNewNode(e) {
+				e.stopPropagation();
+				let dataAttr = Math.random().toString(16).substring(2);
 				let svg = document.getElementsByTagName('svg')[0];
 				let g = document.createElementNS(SVGURL, 'g');
 
@@ -42,6 +37,8 @@
 				rect.setAttribute('width', '100');
 				rect.setAttribute('height', '100');
 				rect.setAttribute('rx', '5');
+				rect.setAttribute('rx', '5');
+				rect.setAttribute('data-id', dataAttr);
 
 				let text = document.createElementNS(SVGURL, 'text');
 				let textNode = document.createTextNode('Some Node');
@@ -51,39 +48,71 @@
 				text.setAttribute('font-size', '15');
 				text.setAttribute('fill', 'blue');
 				text.setAttribute('text', 'Some Node');
+				text.setAttribute('data-id', dataAttr);
 				text.appendChild(textNode);
 
 				g.appendChild(rect);
 				g.appendChild(text);
+				g.setAttribute('x', '30');
+				g.setAttribute('y', '20');
+				g.setAttribute('data-id', dataAttr);
 				svg.appendChild(g);
-
-				g.addEventListener('mousedown', start);
-				g.addEventListener("mousemove",  move);
-				g.addEventListener('mouseup', finish);
 			}
 
 			// Event listener functions
 
 			function start(e) {
-				this.classList.add("active");
-				this.setAttribute('diifX', e.pageX - this.getAttribute('x'));
-				this.setAttribute('diifY', e.pageY - this.getAttribute('y'));
+				let dataID = e.target.getAttribute('data-id');
+
+				if(dataID !== null && dataID !== undefined) {
+					let svg = document.getElementsByTagName('svg')[0];
+					svg.setAttribute('clientX', e.clientX);
+					svg.setAttribute('clientY', e.clientY);
+					svg.setAttribute('data-id', dataID);
+
+					let g = document.querySelectorAll('g[data-id="' + dataID + '"]')[0];
+					g.setAttribute('startX', g.getAttribute('x'));
+					g.setAttribute('startY', g.getAttribute('y'));
+					g.classList.add("active");
+
+					document.body.addEventListener("mousemove",  move);
+				}
+
 			}
 
 			function move(e) {
-				if(this.classList.contains("active")) {
-					let x = e.pageX - this.getAttribute('diifX');
-					let y = e.pageY - this.getAttribute('diifY')
+				let svg = document.getElementsByTagName('svg')[0];
+				let startClientX = Number(svg.getAttribute('clientX'));
+				let startClientY = Number(svg.getAttribute('clientY'));
+
+				let dataID = svg.getAttribute('data-id');
+				let g = document.querySelectorAll('g[data-id="' + dataID + '"]')[0];
+				let startX = Number(g.getAttribute('startX'));
+				let startY = Number(g.getAttribute('startY'));
+
+				if(g.classList.contains("active")) {
+					let x = startX + (e.clientX - startClientX);
+					let y = startY + (e.clientY - startClientY);
 					let translate = 'translate(' + x + ',' + y + ')';
-					this.setAttribute('transform', translate)
-					this.setAttribute('x', x);
-					this.setAttribute('y', y);
+					g.setAttribute('transform', translate);
+					g.setAttribute('x', x);
+					g.setAttribute('y', y);
+
+					document.body.addEventListener('mouseup', finish);
 				}
 			}
 
 			function finish(e) {
-				this.classList.remove("active");
-				creatNewNode();
+				document.body.removeEventListener("mousemove",  move);
+
+				let dataID = e.target.getAttribute('data-id');
+				let g = document.querySelectorAll('g[data-id="' + dataID + '"]')[0];
+				g.classList.remove("active");
+				
+				let svg = document.getElementsByTagName('svg')[0];
+				svg.removeAttribute('data-id');
+				svg.removeAttribute('clientX');
+				svg.removeAttribute('clientY');
 			}
 
 		</script>
